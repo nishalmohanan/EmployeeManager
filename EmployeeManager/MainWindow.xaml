@@ -1,0 +1,105 @@
+﻿<Window x:Class="EmployeeManager.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:EmployeeManager"
+        xmlns:converters="clr-namespace:EmployeeManager.ViewModels.Converters"
+        xmlns:controls="clr-namespace:EmployeeManager.Controls"
+        mc:Ignorable="d"
+        x:Name="empListWindow"
+        Title="Employee  Manager"  Loaded="empListWindow_Loaded"   WindowState="Normal" SizeToContent="Height" >
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Styles/Theme.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+            <converters:GenderToTextConverter   x:Key="GenderToTextConvertor" />
+            <converters:StatusToTextConverter   x:Key="StatusToTextConvertor" />
+        </ResourceDictionary>     
+    </Window.Resources>
+
+    <DockPanel >
+        <Menu DockPanel.Dock="Top">
+            <MenuItem Header="File" >
+                <MenuItem Header="Exit"/>
+            </MenuItem>
+            <MenuItem Header="Edit" >
+                <MenuItem Header="Refresh" Command="{Binding RefreshCommand}"/>
+            </MenuItem>
+        </Menu>
+        <StatusBar DockPanel.Dock="Bottom">
+            <StatusBarItem>
+                <StackPanel Orientation="Horizontal">
+                    <Label  Grid.Row="0" Grid.Column="0" Content="Status : "/>
+                    <Label Grid.Row="0" Grid.Column="1"   Content="{Binding StatusText}"/>                    
+                </StackPanel>
+            </StatusBarItem>
+        </StatusBar>
+        <Grid DockPanel.Dock="Top"  Margin="5 20">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="30"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <StackPanel  Grid.Row="0" Grid.Column="1"  Orientation="Horizontal" HorizontalAlignment="Right" >
+                <TextBox   Text ="{Binding  SearchData, UpdateSourceTrigger=PropertyChanged}"  Style="{StaticResource SearchText}"   FocusManager.IsFocusScope="True">
+                    <TextBox.InputBindings>
+                        <KeyBinding Command="{Binding Path=SearchCommand}" Key="Enter" />
+                    </TextBox.InputBindings>
+                </TextBox>
+                <Button   Content ="Q" Style="{StaticResource SearchButton}" Command="{Binding SearchCommand}" />
+            </StackPanel>
+
+            <StackPanel   Grid.Row="0" Grid.Column="0"    HorizontalAlignment="Left" Orientation="Horizontal">
+                <Button   Content ="+"  Style="{StaticResource PlusButton}" Command="{Binding AddCommand}" />
+                <Button   Content ="()" Style="{StaticResource RefreshButton}" Command="{Binding RefreshCommand}" />
+            </StackPanel>
+            <DockPanel Grid.Row="1" Grid.ColumnSpan="2" Grid.Column="0" >
+                <DataGrid  
+                     DockPanel.Dock="Top"
+                      EnableRowVirtualization="True"
+                      AutoGenerateColumns="False" 
+                      IsReadOnly="True"
+                      SelectionMode="Single"
+                      ItemsSource="{Binding  EmployeeList}"  SelectedItem="{Binding  SelectedEmployee}" Style="{StaticResource ResourceKey=EmpGrd}" >
+                    <DataGrid.Columns >
+                        <DataGridTextColumn Header=" ID" Width=" 2*" Binding="{Binding Id}" ></DataGridTextColumn>
+                        <DataGridTextColumn Header=" Name" Width=" 4*" Binding="{Binding Name}"></DataGridTextColumn>
+                        <DataGridTextColumn Header=" Email" Width=" 4*" Binding="{Binding Email}"></DataGridTextColumn>
+                        <DataGridTextColumn Header=" Gender" Width=" 2*" Binding="{Binding Gender , Converter={StaticResource GenderToTextConvertor }}"></DataGridTextColumn>
+                        <DataGridTextColumn Header=" Status"  Width=" 2*" Binding="{Binding Status, Converter={StaticResource StatusToTextConvertor }}"></DataGridTextColumn>
+                        <DataGridTemplateColumn >
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Button Style="{StaticResource EditButton}"  Command="{Binding  Path=DataContext.EditCommand , ElementName=empListWindow }">Edit</Button>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn >
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Button Style="{StaticResource DeleteButton}"  Command="{Binding Path=DataContext.DeleteCommand , ElementName=empListWindow }">Delete</Button>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+                <WrapPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right">
+                    <controls:Pager  MoveFirst="{Binding Path=MoveFirstCommand}" 
+                                                        MoveLast="{Binding Path=MoveLastCommand}"
+                                                         MoveNext="{Binding Path=MoveNextCommand}"
+                                                        MovePrevious="{Binding Path=MovePrevCommand}"
+                                                        CurrentPage="{Binding Path=CurrentPageNumber}"></controls:Pager>
+                </WrapPanel>
+            </DockPanel>
+            
+        </Grid>
+
+        
+    </DockPanel>
+    
+</Window>

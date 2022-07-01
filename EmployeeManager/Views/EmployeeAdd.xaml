@@ -1,0 +1,77 @@
+﻿<Window x:Class="EmployeeManager.Views.EmployeeAdd"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:EmployeeManager.Views"
+        xmlns:converters="clr-namespace:EmployeeManager.ViewModels.Converters"
+        xmlns:validationRules="clr-namespace:EmployeeManager.ViewModels.ValidationRules"
+        mc:Ignorable="d"
+        x:Name="CreateEmployeeWindow"
+        Title="Add New Employee" Height="auto" Width="auto"   ResizeMode="NoResize" SizeToContent ="WidthAndHeight" WindowStartupLocation="CenterOwner">
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Styles/Theme.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+            <converters:GenderToRadioConverter  x:Key="GenderSelector" />
+        </ResourceDictionary>
+        
+    </Window.Resources>
+    <Grid  Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition  Width="1*"/>
+            <ColumnDefinition  Width="2*"/>
+        </Grid.ColumnDefinitions>
+        <Label  Grid.Column="0"  Grid.Row="0" Content="Name" />
+        <TextBox x:Name="tbName"   Grid.Column="1"  Grid.Row="0"  HorizontalContentAlignment="Left"  Style="{StaticResource ResourceKey=DefaultText}" >
+            <TextBox.Text>
+                <Binding  Path="Name" Mode="TwoWay" UpdateSourceTrigger ="LostFocus"    NotifyOnValidationError="True">
+                    <Binding.ValidationRules>
+                        <validationRules:SpecialCharacterValidationRule     ValidatesOnTargetUpdated="True" />
+                    </Binding.ValidationRules>                    
+                </Binding>                
+            </TextBox.Text> 
+        </TextBox>
+        <Label  Grid.Column="0"  Grid.Row="1" Content="Email" HorizontalContentAlignment="Left" />
+        <TextBox x:Name="tbEmail"   Grid.Column="1"  Grid.Row="1"  HorizontalContentAlignment="Left" Style="{StaticResource ResourceKey=DefaultText}">
+            <TextBox.Text>
+                <Binding  Path="Email" Mode="TwoWay" UpdateSourceTrigger ="LostFocus"  ValidatesOnExceptions="True"   NotifyOnValidationError="True">
+                    <Binding.ValidationRules>
+                        <validationRules:EmailValidationRule     ValidatesOnTargetUpdated="True" />
+                    </Binding.ValidationRules>
+                </Binding>
+            </TextBox.Text>
+        </TextBox>
+        <Label  Grid.Column="0"  Grid.Row="2" Content="Gender" HorizontalContentAlignment="Left" />
+        <StackPanel Orientation="Horizontal"   Grid.Column="1"   Grid.Row="2"  Style="{StaticResource ResourceKey=DefaultFormContent}" >
+            <RadioButton Content="Male"   IsChecked="{Binding Path=Gender, Converter= {StaticResource GenderSelector}, ConverterParameter=0}"/>
+            <RadioButton Content="Female" IsChecked="{Binding Path=Gender, Converter= {StaticResource GenderSelector}, ConverterParameter=1}"/>
+        </StackPanel>
+        <StackPanel  Grid.Column="1"  Grid.Row="3"  Orientation="Horizontal"  HorizontalAlignment="Right">
+            <Button Content="Save" DockPanel.Dock="Right"   Command="{Binding  Path= CreateEmployeeCommand}" CommandParameter="{Binding ElementName=CreateEmployeeWindow}">
+                <Button.Style>
+                    <Style TargetType="{x:Type Button}">
+                        <Setter Property="Width"     Value="50" />
+                        <Setter Property="Height"        Value="25" />
+                        <Setter Property="Margin" Value="4"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ElementName=tbName, Path=(Validation.HasError)}" Value="True">
+                                <Setter Property="IsEnabled" Value="False"></Setter>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding ElementName=tbEmail, Path=(Validation.HasError)}" Value="True">
+                                <Setter Property="IsEnabled" Value="False"></Setter>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>                 
+            </Button>
+        </StackPanel>
+    </Grid>
+</Window>
